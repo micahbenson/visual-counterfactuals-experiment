@@ -1,0 +1,8 @@
+Original Code:
+Compute counterfactuals
+100%|████████████████████████████████████████████████████████████████████████████████| 5794/5794 [1:16:46<00:00,  1.26it/s]
+Generated 4407 counterfactual explanations
+Average number of edits is 3.83
+Eval results single edit: {'Near-KP': 0.7835262083049693, 'Same-KP': 0.4098025867937372}
+Eval results all edits: {'Near-KP': 0.720187015446529, 'Same-KP': 0.3655678522814701}
+

@@ -1,3 +1,16 @@
+CUB_200_2011
+images
+output
+
+# VSCode settings
+.vscode/
+
+ Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+'
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
