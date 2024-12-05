@@ -101,9 +101,15 @@ def main():
         ).numpy()
         use_auxiliary_features = True
 
+        print(f'aux_dim {aux_dim}')
+        print(f'aux n_pix {n_pix}')
+        print(f'aux features len {len(auxiliary_features)}')
+
     else:
         use_auxiliary_features = False
 
+    #print('switching to cpu...')
+    #device = torch.device("cpu")
     # compute counterfactuals
     print("Compute counterfactuals")
     counterfactuals = {}
@@ -154,24 +160,24 @@ def main():
             distractor_aux_features = None
 
         # compute counterfactual
-        try:
-            list_of_edits = compute_counterfactual(
-                query=query,
-                distractor=distractor,
-                classification_head=classifier_head,
-                distractor_class=distractor_target,
-                query_aux_features=query_aux_features,
-                distractor_aux_features=distractor_aux_features,
-                lambd=config["counterfactuals_kwargs"]["lambd"],
-                temperature=config["counterfactuals_kwargs"]["temperature"],
-                topk=config["counterfactuals_kwargs"]["topk"]
-                if "topk" in config["counterfactuals_kwargs"].keys()
-                else None,
-            )
+        #try:
+        list_of_edits = compute_counterfactual(
+            query=query,
+            distractor=distractor,
+            classification_head=classifier_head,
+            distractor_class=distractor_target,
+            query_aux_features=query_aux_features,
+            distractor_aux_features=distractor_aux_features,
+            lambd=config["counterfactuals_kwargs"]["lambd"],
+            temperature=config["counterfactuals_kwargs"]["temperature"],
+            topk=config["counterfactuals_kwargs"]["topk"]
+            if "topk" in config["counterfactuals_kwargs"].keys()
+            else None,
+        )
 
-        except BaseException:
-            print("warning - no counterfactual @ index {}".format(query_index))
-            continue
+        # except BaseException:
+        #     print("warning - no counterfactual @ index {}".format(query_index))
+        #     continue
 
         counterfactuals[query_index] = {
             "query_index": query_index,
@@ -181,6 +187,7 @@ def main():
             "edits": list_of_edits,
         }
 
+    # the result gets saved here which is great because now I can deal with eval seperately
     # save result
     np.save(os.path.join(dirpath, "counterfactuals.npy"), counterfactuals)
 

@@ -84,6 +84,8 @@ def get_imagenet_test_transform():
 
 
 def get_test_dataloader(p, dataset):
+    print(f'num_workers {p["num_workers"]}')
+    print(f'batch_size {p["batch_size"]}')
     return torch.utils.data.DataLoader(
         dataset,
         num_workers=p["num_workers"],

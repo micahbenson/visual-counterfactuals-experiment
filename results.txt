@@ -6,3 +6,32 @@ Average number of edits is 3.83
 Eval results single edit: {'Near-KP': 0.7835262083049693, 'Same-KP': 0.4098025867937372}
 Eval results all edits: {'Near-KP': 0.720187015446529, 'Same-KP': 0.3655678522814701}
 
+
+Pre-compute classifier predictions
+Top-1 accuracy: 81.60
+Pre-compute query-distractor pairs
+Pre-compute auxiliary features for soft constraint
+Using cache found in /usr3/graduate/micahb/.cache/torch/hub/facebookresearch_swav_main
+/projectnb/compvision/micahb/.conda/envs/counterfactuals/lib/python3.8/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/projectnb/compvision/micahb/.conda/envs/counterfactuals/lib/python3.8/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=None`.
+  warnings.warn(msg)
+Compute counterfactuals
+ 49%|████████████████████████████████████████▏                                         | 2844/5794 [31:09<51:08,  1.04s/it]warning - no counterfactual @ index 2844
+100%|████████████████████████████████████████████████████████████████████████████████| 5794/5794 [1:03:30<00:00,  1.52it/s]
+Generated 4436 counterfactual explanations
+Average number of edits is 2.92
+Eval results single edit: {'Near-KP': 0.75, 'Same-KP': 0.34941388638412985}
+Eval results all edits: {'Near-KP': 0.6443672839506173, 'Same-KP': 0.31242283950617283}
+
+CUDA ERROR
+len query_edits 729904
+len distractor_edits 729904
+len all_edits 729904
+ALL EDITS 145980
+
+45000
+
+Problem because its way way bigger 
+
+

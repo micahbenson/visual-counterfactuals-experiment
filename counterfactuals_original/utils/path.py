@@ -9,7 +9,7 @@ class Path:
     @staticmethod
     def db_root_dir(db_name):
         if db_name == "CUB":
-            return "./CUB_200_2011"
+            return "../CUB_200_2011"
 
         else:
             raise NotImplementedError

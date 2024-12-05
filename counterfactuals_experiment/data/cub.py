@@ -42,7 +42,7 @@ class Cub(Dataset):
         self._train = train
         self._class_name_index = {}
         self._return_image_only = return_image_only
-
+        print(self._dataset_folder)
         if not self._check_dataset_folder():
             raise RuntimeError(
                 "Dataset not downloaded, download it from "

@@ -23,6 +23,7 @@ class VGG16(nn.Module):
         logits = self.classifier(features)
         return {"features": features, "logits": logits}
 
+    #would need to do adjustments here... 
     def features(self, x):
         return self.vgg.features(x)
 
@@ -32,6 +33,7 @@ class VGG16(nn.Module):
     def get_classifier_head(self):
         return nn.Sequential(nn.Flatten(start_dim=1), self.vgg.classifier)
 
+    #does this need to be adjusted? 
     def get_features_dim(self):
         return {"n_feat": 512, "n_row": 7, "n_pixels": 49}
 
@@ -61,27 +63,32 @@ class ResNet50(nn.Module):
 
         x = self.resnet.layer1(x)
         x = self.resnet.layer2(x)
-        x = self.resnet.layer3(x)
-        x = self.resnet.layer4[0](x)
+        x = self.resnet.layer3[0](x)
+        print("After Layer3:", x.shape)
+
+        #x = self.resnet.layer4[0](x) #Here is where it is split... so we want to change this layer to teh classifier
         return x
 
     def classifier(self, x):
-        x = self.resnet.layer4[1:](x)
+        x = self.resnet.layer3[1:](x)
+        x = self.resnet.layer4(x)
         x = self.resnet.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.resnet.fc(x)
         return x
 
-    def get_classifier_head(self):
+    def get_classifier_head(self): #Will need to match this to new classifier look
         return nn.Sequential(
-            self.resnet.layer4[1:],
+            self.resnet.layer3[1:],
+            self.resnet.layer4,
             self.resnet.avgpool,
             nn.Flatten(start_dim=1),
             self.resnet.fc,
         )
 
     def get_features_dim(self):
-        return {"n_feat": 2048, "n_row": 7, "n_pixels": 49}
+        return {"n_feat": 1024, "n_row": 14, "n_pixels": 196}
+        #return {"n_feat": 2048, "n_row": 7, "n_pixels": 49} #This prob changes too...
 
     def get_num_classes(self):
         return self.num_classes

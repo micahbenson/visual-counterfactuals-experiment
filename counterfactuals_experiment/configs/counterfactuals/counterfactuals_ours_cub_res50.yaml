@@ -1,4 +1,4 @@
-batch_size: 64
+batch_size: 64 #changing this for gpu memory...
 num_workers: 4
 
 model: ResNet50

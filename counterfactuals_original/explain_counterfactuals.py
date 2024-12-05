@@ -109,94 +109,101 @@ def main():
     print("Compute counterfactuals")
     counterfactuals = {}
 
-    for query_index in tqdm(range(len(dataset))):
-        if query_index not in query_distractor_pairs.keys():
-            continue  # skips images that were classified incorrectly
+    for l in [0.0, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
+        for query_index in tqdm(range(len(dataset))):
+            if query_index not in query_distractor_pairs.keys():
+                continue  # skips images that were classified incorrectly
 
-        # gather query features
-        query = features[query_index]  # dim x n_row x n_row
-        query_pred = preds[query_index]
-        if query_pred != targets[query_index]:
-            continue  # skip if query classified incorrect
+            # gather query features
+            query = features[query_index]  # dim x n_row x n_row
+            query_pred = preds[query_index]
+            if query_pred != targets[query_index]:
+                continue  # skip if query classified incorrect
 
-        # gather distractor features
-        distractor_target = query_distractor_pairs[query_index][
-            "distractor_class"
-        ]  # noqa
-        distractor_index = query_distractor_pairs[query_index][
-            "distractor_index"
-        ]  # noqa
-        if isinstance(distractor_index, int):
-            if preds[distractor_index] != distractor_target:
-                continue  # skip if distractor classified is incorrect
-            distractor_index = [distractor_index]
+            # gather distractor features
+            distractor_target = query_distractor_pairs[query_index][
+                "distractor_class"
+            ]  # noqa
+            distractor_index = query_distractor_pairs[query_index][
+                "distractor_index"
+            ]  # noqa
+            if isinstance(distractor_index, int):
+                if preds[distractor_index] != distractor_target:
+                    continue  # skip if distractor classified is incorrect
+                distractor_index = [distractor_index]
 
-        else:  # list
-            distractor_index = [
-                jj for jj in distractor_index if preds[jj] == distractor_target
-            ]
-            if len(distractor_index) == 0:
-                continue  # skip if no distractors classified correct
+            else:  # list
+                distractor_index = [
+                    jj for jj in distractor_index if preds[jj] == distractor_target
+                ]
+                if len(distractor_index) == 0:
+                    continue  # skip if no distractors classified correct
 
-        distractor = torch.stack([features[jj] for jj in distractor_index], dim=0)
+            distractor = torch.stack([features[jj] for jj in distractor_index], dim=0)
 
-        # soft constraint uses auxiliary features
-        if use_auxiliary_features:
-            query_aux_features = torch.from_numpy(
-                auxiliary_features[query_index]
-            )  # aux_dim x n_row x n_row
-            distractor_aux_features = torch.stack(
-                [torch.from_numpy(auxiliary_features[jj]) for jj in distractor_index],
-                dim=0,
-            )  # n x aux_dim x n_row x n_row
+            # soft constraint uses auxiliary features
+            if use_auxiliary_features:
+                query_aux_features = torch.from_numpy(
+                    auxiliary_features[query_index]
+                )  # aux_dim x n_row x n_row
+                distractor_aux_features = torch.stack(
+                    [torch.from_numpy(auxiliary_features[jj]) for jj in distractor_index],
+                    dim=0,
+                )  # n x aux_dim x n_row x n_row
 
-        else:
-            query_aux_features = None
-            distractor_aux_features = None
+            else:
+                query_aux_features = None
+                distractor_aux_features = None
 
-        # compute counterfactual
-        try:
-            list_of_edits = compute_counterfactual(
-                query=query,
-                distractor=distractor,
-                classification_head=classifier_head,
-                distractor_class=distractor_target,
-                query_aux_features=query_aux_features,
-                distractor_aux_features=distractor_aux_features,
-                lambd=config["counterfactuals_kwargs"]["lambd"],
-                temperature=config["counterfactuals_kwargs"]["temperature"],
-                topk=config["counterfactuals_kwargs"]["topk"]
-                if "topk" in config["counterfactuals_kwargs"].keys()
-                else None,
-            )
+            # compute counterfactual
+            try:
+                list_of_edits = compute_counterfactual(
+                    query=query,
+                    distractor=distractor,
+                    classification_head=classifier_head,
+                    distractor_class=distractor_target,
+                    query_aux_features=query_aux_features,
+                    distractor_aux_features=distractor_aux_features,
+                    lambd=l,
+                    temperature=config["counterfactuals_kwargs"]["temperature"],
+                    topk=config["counterfactuals_kwargs"]["topk"]
+                    if "topk" in config["counterfactuals_kwargs"].keys()
+                    else None,
+                )
 
-        except BaseException:
-            print("warning - no counterfactual @ index {}".format(query_index))
-            continue
+            except BaseException:
+                print("warning - no counterfactual @ index {}".format(query_index))
+                continue
 
-        counterfactuals[query_index] = {
-            "query_index": query_index,
-            "distractor_index": distractor_index,
-            "query_target": query_pred,
-            "distractor_target": distractor_target,
-            "edits": list_of_edits,
-        }
+            counterfactuals[query_index] = {
+                "query_index": query_index,
+                "distractor_index": distractor_index,
+                "query_target": query_pred,
+                "distractor_target": distractor_target,
+                "edits": list_of_edits,
+            }
 
-    # save result
-    np.save(os.path.join(dirpath, "counterfactuals.npy"), counterfactuals)
+        # save result
+        np.save(os.path.join(dirpath, f"{l}_vgg_counterfactuals.npy"), counterfactuals)
 
-    # evaluation
-    print("Generated {} counterfactual explanations".format(len(counterfactuals)))
-    average_num_edits = np.mean([len(res["edits"]) for res in counterfactuals.values()])
-    print("Average number of edits is {:.2f}".format(average_num_edits))
+        # evaluation
+        print("Generated {} counterfactual explanations".format(len(counterfactuals)))
+        average_num_edits = np.mean([len(res["edits"]) for res in counterfactuals.values()])
+        print("Average number of edits is {:.2f}".format(average_num_edits))
 
-    result = compute_eval_metrics(
-        counterfactuals,
-        dataset=dataset,
-    )
+        result = compute_eval_metrics(
+            counterfactuals,
+            dataset=dataset,
+        )
+        print(f'lambda = {l}')
+        print("Eval results single edit: {}".format(result["single_edit"]))
+        print("Eval results all edits: {}".format(result["all_edit"]))
+        with open('./experiment_results.txt', 'a') as output: 
+            output.write(f'lambda = {l}\n')
+            output.write("Eval results single edit: {}\n".format(result["single_edit"]))
+            output.write("Eval results all edits: {}\n".format(result["all_edit"]))
 
-    print("Eval results single edit: {}".format(result["single_edit"]))
-    print("Eval results all edits: {}".format(result["all_edit"]))
+
 
 
 if __name__ == "__main__":

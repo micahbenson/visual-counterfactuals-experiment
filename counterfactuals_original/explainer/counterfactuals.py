@@ -72,6 +72,10 @@ def compute_counterfactual(
     )
     all_edits = [(i, j) for i, j in zip(query_edits, distractor_edits)]
 
+    # print(f'len query_edits {len(query_edits)}')
+    # print(f'len distractor_edits {len(distractor_edits)}')
+    # print(f'len all_edits {len(all_edits)}')
+
     if topk is not None:
         all_edits = _find_knn_cells(
             query_aux_features_fl, distractor_aux_features_fl, all_edits, topk

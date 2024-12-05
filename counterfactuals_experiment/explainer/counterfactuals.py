@@ -7,6 +7,7 @@
 import numpy as np
 import torch
 import torch.nn.functional as F
+from torch.cuda.amp import autocast
 
 
 @torch.no_grad()
@@ -40,11 +41,12 @@ def compute_counterfactual(
     classification_head.eval()
 
     # get dimensions of spatial feature representations
+    # this should easily adapt to edits I make (because I am giving the new dims)
     n_feat, n_pix = query.shape[0], query.shape[1]
     n_pixels = n_pix * n_pix
 
     # flatten
-    query_fl = query.reshape(n_feat, -1).t().cuda()  # n_pixels x dim
+    query_fl = query.reshape(n_feat, -1).t().cuda()  # n_pixels x dim 
     distractor_fl = (
         torch.permute(distractor, (0, 2, 3, 1)).reshape(-1, n_feat).cuda()
     )  # N * n_pixels x dim
@@ -71,12 +73,19 @@ def compute_counterfactual(
         np.arange(query_fl.shape[0] * distractor_fl.shape[0]) % distractor_fl.shape[0]
     )
     all_edits = [(i, j) for i, j in zip(query_edits, distractor_edits)]
+    
+    print(f'len query_edits {len(query_edits)}')
+    print(f'len distractor_edits {len(distractor_edits)}')
+    print(f'len all_edits {len(all_edits)}')
+    # length of all these arrays is the same, which is good
+    # problem must be the length of logits then
+    # that problem comes from the length of the auxilary features
 
     if topk is not None:
         all_edits = _find_knn_cells(
             query_aux_features_fl, distractor_aux_features_fl, all_edits, topk
         )
-
+    print(f"ALL EDITS {len(all_edits)}")
     # init variables
     current = query_fl.clone()
     list_of_edits = []
@@ -147,14 +156,54 @@ def _get_feature_representations_of_all_edits(query_fl, distractor_fl, all_edits
     """
     Construct feature representations when performing different edits.
     """
-    num_allowed = len(all_edits)
-    features_all_edits = torch.clone(query_fl).repeat(num_allowed, 1, 1)
+    #query_fl = query_fl.to('cpu') #new
+    #distractor_fl = distractor_fl.to('cpu') #new
+    num_allowed = int(len(all_edits))
+    with autocast():
+        features_all_edits = torch.clone(query_fl).repeat(num_allowed, 1, 1)
 
-    for ii in range(num_allowed):
-        cell_I, cell_I_prime = all_edits[ii]
-        features_all_edits[ii, cell_I].copy_(distractor_fl[cell_I_prime])
+        for ii in range(num_allowed):
+            cell_I, cell_I_prime = all_edits[ii]
+            features_all_edits[ii, cell_I].copy_(distractor_fl[cell_I_prime])
+    #features_all_edits = features_all_edits.to('cuda') #new
 
     return features_all_edits
+
+# def _get_feature_representations_of_all_edits(query_fl, distractor_fl, all_edits):
+#     """
+#     Construct feature representations for different edits without excessive memory allocation.
+#     """
+#     num_allowed = len(all_edits)
+#     features_all_edits = []
+#     batch_size = 64
+#     for i in range(0, num_allowed, batch_size):
+#         batch_edits = all_edits[i:i + batch_size]
+#         batch_features = []
+#         for edit in batch_edits:
+#             cell_I, cell_I_prime = edit
+#             current_features = query_fl.clone()
+#             current_features[cell_I].copy_(distractor_fl[cell_I_prime])
+#             batch_features.append(current_features)
+#     features_all_edits.extend(batch_features)
+
+#     # # Process each edit individually
+#     # for ii in range(num_allowed):
+
+#     #     # Clone the query feature map for this edit
+#     #     current_features = query_fl.clone()
+
+#     #     # Apply the specific edit
+#     #     cell_I, cell_I_prime = all_edits[ii]
+#     #     current_features[cell_I].copy_(distractor_fl[cell_I_prime])
+
+#     #     # Append the modified features to the list
+#     #     features_all_edits.append(current_features)
+
+#     # Stack the results into a single tensor at the end
+#     features_all_edits = torch.stack(features_all_edits)
+#     print("features all edits shape:", features_all_edits.shape)
+
+#     return features_all_edits
 
 
 @torch.no_grad()
@@ -193,12 +242,11 @@ def _find_single_best_edit(
     # compute classification loss via classifier head
     classification_head.eval()
     n_feat, n_pix, _ = dims
-
     logits_class = classification_head(
         torch.transpose(all_combinations, 1, 2)
         .contiguous()
         .view(-1, n_feat, n_pix, n_pix)
-        .cuda()
+        .gpu()
     )
     probs_class = F.softmax(logits_class, dim=1)[:, distractor_class]
     optim_class = probs_class.cpu().numpy()

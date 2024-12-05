@@ -4,6 +4,8 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
+#Need to change this because the dimensions of the features will be different for this version
+
 import torch
 
 
@@ -13,13 +15,15 @@ def get_auxiliary_model():
     model = torch.hub.load("facebookresearch/swav", "resnet50")
     model.avgpool = torch.nn.Identity()
     model.fc = torch.nn.Identity()
-    model.layer4 = model.layer4[0]  # only use conv5.1 in last block.
-    dim = 2048
-    n_pix = 7
+    model.layer3 = model.layer3[0]
+    model.layer4 = torch.nn.Identity()
+    #model.layer4 = model.layer4[0]  # only use conv5.1 in last block. 
+    dim = 1024
+    n_pix = 14 #prob need to adjust this
 
     return model, dim, n_pix
 
-
+#I think I need to change this part... 
 @torch.inference_mode()
 def process_dataset(model, dim, n_pix, dataloader, device):
     """
@@ -29,11 +33,26 @@ def process_dataset(model, dim, n_pix, dataloader, device):
     model.eval()
 
     features = torch.FloatTensor(len(dataloader.dataset), dim, n_pix, n_pix)
+    print()
     idx = 0
 
+
     for batch in dataloader:
+        print(f"batch shape! {batch.shape}")
         batch_size = batch.shape[0]
+        print(f'batch_size {batch_size}')
+        print(f'dim {dim}')
+        print(f'n_pix {n_pix}')
+        print(f'n_pix {n_pix}')
+
+        # batch1 = batch.to(device)
+        # output = model.features(batch1)
+        # print("Output feature map shape:", output.shape)
+
+
         output = model(batch.to(device)).reshape(batch_size, dim, n_pix, n_pix)
+        print("Output shape", output.shape)
+
         features[idx : idx + batch_size].copy_(output)
         idx += batch_size
 
