@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from collections import defaultdict
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -35,6 +36,9 @@ def compute_eval_metrics(
 
     Results are returned as a dictionary.
     """
+
+    counterfactuals_inital = np.load('./output/counterfactuals_ours_cub_vgg16/counterfactuals.npy', allow_pickle=True).item()
+
     # initialize results dict
     results = {
         "Same-KP": defaultdict(list),
@@ -53,37 +57,37 @@ def compute_eval_metrics(
     #but could also just be implicit and change when I adjust everything else... 
 
     # evaluate all counterfactuals
-    for counterfactual in counterfactuals.values():
+    for counterfactual, initial in zip(counterfactuals.values(), counterfactuals_inital.values()):
         # gather query and distractor indexes
         query_index = counterfactual["query_index"]
-        distractor_index = counterfactual["distractor_index"]
+        initial_index = initial["query_index"]
 
         # gather keypoint annotations for query and distractor images
         # of shape (n x n_parts x n_pix x n_pix)
         query_keypoints = keypoints[query_index]
-        distractor_keypoints = keypoints[distractor_index]
+        initial_keypoints = keypoints[initial_index]
         if len(query_keypoints.shape) == 3:
             query_keypoints = query_keypoints.unsqueeze(0)
-        if len(distractor_keypoints.shape) == 3:
-            distractor_keypoints = distractor_keypoints.unsqueeze(0)
+        if len(initial_keypoints.shape) == 3:
+            initial_keypoints = initial_keypoints.unsqueeze(0)
 
         # flatten the keypoint maps
         query_keypoints = (
             torch.permute(query_keypoints, (1, 0, 2, 3)).reshape(n_parts, -1).float()
         )
-        distractor_keypoints = (
-            torch.permute(distractor_keypoints, (1, 0, 2, 3))
+        initial_keypoints = (
+            torch.permute(initial_keypoints, (1, 0, 2, 3))
             .reshape(n_parts, -1)
             .float()
         )
 
         # measure near-kp and same-kp for each edit
-        for edit in counterfactual["edits"]:
-            query_cell, distractor_cell = edit[0], edit[1]
+        for edit, edit_initial in zip(counterfactual["edits"], initial["edits"]):
+            query_cell, initial_cell = edit[0], edit_initial[0]
             same_kp = torch.any(
                 torch.logical_and(
                     query_keypoints[:, query_cell],
-                    distractor_keypoints[:, distractor_cell],
+                    initial_keypoints[:, initial_cell],
                 )
             ).float()
             results["Same-KP"][query_index].append(same_kp.item())
@@ -104,15 +108,19 @@ def compute_eval_metrics(
 
     return results
 
-
-path  = "path"
-counterfactuals = np.load(path)
 dataset = get_test_dataset(transform=get_test_transform())
 
-result = compute_eval_metrics(
-    counterfactuals,
-    dataset=dataset,
-)
+path  = Path('./output/counterfactuals_ours_cub_vgg16/')
+all_paths = list(path.iterdir())
+for p in all_paths: 
+    counterfactuals = np.load(p, allow_pickle=True).item()
 
-print("Eval results single edit: {}".format(result["single_edit"]))
-print("Eval results all edits: {}".format(result["all_edit"]))
+    result = compute_eval_metrics(
+        counterfactuals,
+        dataset=dataset,
+    )
+
+    print(p)
+    print("Eval results single edit: {}".format(result["single_edit"]))
+    print("Eval results all edits: {}".format(result["all_edit"]))
+    print('----------------------------------------')
