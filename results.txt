@@ -35,3 +35,109 @@ ALL EDITS 145980
 Problem because its way way bigger 
 
 
+----------------------------------
+output/counterfactuals_ours_cub_vgg16/0.5_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.7016110732924892}
+Eval results all edits: {'Same-KP': 0.5737316263632053}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.3_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.695257544815067}
+Eval results all edits: {'Same-KP': 0.5698044009779951}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.7413206262763785}
+Eval results all edits: {'Same-KP': 0.6739066106409421}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.7_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.6355797594735648}
+Eval results all edits: {'Same-KP': 0.46058631921824106}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.1_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.5781710914454278}
+Eval results all edits: {'Same-KP': 0.415153452685422}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.0_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.517358747447243}
+Eval results all edits: {'Same-KP': 0.340458408447077}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.2_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.6371681415929203}
+Eval results all edits: {'Same-KP': 0.4894631209232313}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.8_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.6090310869071931}
+Eval results all edits: {'Same-KP': 0.42391046897205115}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.4_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.7406398910823689}
+Eval results all edits: {'Same-KP': 0.6730598472740188}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/1_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.5659178579532562}
+Eval results all edits: {'Same-KP': 0.36483126110124336}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.6_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.6666666666666666}
+Eval results all edits: {'Same-KP': 0.5065773880066367}
+----------------------------------------
+
+
+
+
+
+
+output/counterfactuals_ours_cub_vgg16/0.9_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.42954390742001364}
+Eval results all edits: {'Same-KP': 0.2584797579970393}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.5_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.49353301565690944}
+Eval results all edits: {'Same-KP': 0.31588773014033733}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.3_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.5459496255956433}
+Eval results all edits: {'Same-KP': 0.3669671603348358}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.517358747447243}
+Eval results all edits: {'Same-KP': 0.340458408447077}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.7_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.4570002269117313}
+Eval results all edits: {'Same-KP': 0.2818614830072091}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.1_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.630814613115498}
+Eval results all edits: {'Same-KP': 0.48173442432832936}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.0_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.7002496029044701}
+Eval results all edits: {'Same-KP': 0.6419562419562419}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.2_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.585886090310869}
+Eval results all edits: {'Same-KP': 0.41399304213374566}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/3_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.1963677639046538}
+Eval results all edits: {'Same-KP': 0.1225990197377136}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/2_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.223155505107832}
+Eval results all edits: {'Same-KP': 0.13725226738327176}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.8_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.4404356705241661}
+Eval results all edits: {'Same-KP': 0.268503024842322}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.4_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.5166780122532335}
+Eval results all edits: {'Same-KP': 0.3402008756116405}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/1_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.41388699795779443}
+Eval results all edits: {'Same-KP': 0.24393383536075175}
+----------------------------------------
+output/counterfactuals_ours_cub_vgg16/0.6_vgg_counterfactuals.npy
+Eval results single edit: {'Same-KP': 0.47515316541865216}
+Eval results all edits: {'Same-KP': 0.2979271275910905}
